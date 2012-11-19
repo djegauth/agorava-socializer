@@ -165,8 +165,9 @@ public class SocialClient implements Serializable {
         }
     }
 
-    public void resetConnection() {
+    public String resetConnection() {
         manager.destroyCurrentSession();
+        return null;
     }
 
     /**

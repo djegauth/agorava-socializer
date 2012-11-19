@@ -14,4 +14,6 @@
 ~ limitations under the License.
 --%>
 
-<% response.sendRedirect("home.jsf"); %>
+<%
+	response.sendRedirect("home.jsf");
+%>

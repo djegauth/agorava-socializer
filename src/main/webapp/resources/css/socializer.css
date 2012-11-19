@@ -1,0 +1,8 @@
+body {
+	font-size: 12px !important;
+}
+
+.ui-layout,.ui-layout-doc,.ui-layout-unit,.ui-layout-wrap,.ui-layout-bd,.ui-layout-hd
+	{
+	border: none;
+}
