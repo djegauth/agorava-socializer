@@ -15,6 +15,8 @@
  */
 package org.agorava.socializer;
 
+import java.util.Collections;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
@@ -26,11 +28,15 @@ import org.agorava.LinkedIn;
 import org.agorava.core.api.event.SocialEvent;
 import org.agorava.core.api.event.StatusUpdated;
 import org.agorava.linkedin.NetworkUpdateService;
+import org.agorava.linkedin.model.CurrentShare;
+import org.agorava.linkedin.model.NetworkUpdateParameters;
 import org.agorava.linkedin.model.NewShare;
 import org.agorava.linkedin.model.NewShare.NewShareVisibility;
 import org.agorava.linkedin.model.NewShare.NewShareVisibilityCode;
-//import org.jboss.solder.logging.Logger;
+import org.agorava.linkedin.model.UpdateTypeInput;
 import org.jboss.logging.Logger;
+
+//import org.jboss.solder.logging.Logger;
 
 /**
  * @author Antoine Sabot-Durand
@@ -39,30 +45,51 @@ import org.jboss.logging.Logger;
 @RequestScoped
 public class LinkedInController {
 
-    @Produces
-    @Named
-    private NewShare linkedInShare;
+	@Produces
+	@Named
+	private NewShare linkedInShare;
 
-    @Inject
-    private NetworkUpdateService updateService;
+	@Inject
+	private NetworkUpdateService updateService;
 
-    @Inject
-    Logger log;
+	private String updates;
 
-    @PostConstruct
-    public void init() {
-        linkedInShare = new NewShare("", null, new NewShareVisibility(NewShareVisibilityCode.CONNECTIONS_ONLY));
-    }
+	@Inject
+	Logger log;
 
-    public String sendUpdate() {
-        updateService.share(linkedInShare);
-        return "ok";
-    }
+	@PostConstruct
+	public void init() {
+		linkedInShare = new NewShare("", null, new NewShareVisibility(
+				NewShareVisibilityCode.CONNECTIONS_ONLY));
+	}
 
-    protected void statusUpdateObserver(@Observes @LinkedIn StatusUpdated statusUpdate) {
-        if (statusUpdate.getStatus().equals(SocialEvent.Status.SUCCESS)) {
-            log.debugf("Status update with : %s ", statusUpdate.getMessage());
-            init();
-        }
-    }
+	public String sendUpdate() {
+		updateService.share(linkedInShare);
+		return "ok";
+	}
+
+	public CurrentShare receiveCurrentShare() {
+		CurrentShare result = updateService.getCurrentShare();
+		return result;
+	}
+
+	public void setUpdates(String updates) {
+		this.updates = updates;
+	}
+
+	public String getUpdates() {
+		NetworkUpdateParameters parameters = new NetworkUpdateParameters(null,
+				true, 0, 20, null, null, false, false,
+				Collections.singletonList(UpdateTypeInput.SHAR));
+		this.updates = updateService.getNetworkUpdatesJson(parameters);
+		return updates;
+	}
+
+	protected void statusUpdateObserver(
+			@Observes @LinkedIn StatusUpdated statusUpdate) {
+		if (statusUpdate.getStatus().equals(SocialEvent.Status.SUCCESS)) {
+			log.debugf("Status update with : %s ", statusUpdate.getMessage());
+			init();
+		}
+	}
 }

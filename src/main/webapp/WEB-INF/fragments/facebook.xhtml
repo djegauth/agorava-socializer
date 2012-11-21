@@ -23,9 +23,9 @@
 	<h:panelGroup id="facebooktl" layout="block">
 		<h:panelGrid columns="2" cellpadding="10"
 			columnClasses="verticalTop,verticalBottom">
-			<p:inputTextarea value="#{socialClient.status}" cols="60" rows="5" />
+			<p:inputTextarea value="#{socialClient.facebookStatus}" cols="60" rows="5" />
 			<p:commandButton
-				action="#{facebookFeed.updateStatus(socialClient.status)}"
+				action="#{facebookFeed.updateStatus(socialClient.facebookStatus)}"
 				value="Update your status">
 				<f:ajax render="facebooktl" execute="facebooktl" />
 			</p:commandButton>

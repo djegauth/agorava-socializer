@@ -46,142 +46,182 @@ import static com.google.common.collect.Lists.newArrayList;
 @SessionScoped
 public class SocialClient implements Serializable {
 
-    /**
+	/**
      *
      */
-    private static final long serialVersionUID = 3723552335163650582L;
+	private static final long serialVersionUID = 3723552335163650582L;
 
-    private String Status;
+	private String facebookStatus;
 
-    private String selectedService;
+	private String twitterStatus;
 
-    private static final String DEFAULT_THEME = "aristo";
-    private String currentTheme = DEFAULT_THEME;
+	private String selectedService;
 
-    @Inject
-    private Logger log;
+	private static final String DEFAULT_THEME = "aristo";
+	private String currentTheme = DEFAULT_THEME;
 
-    public String getStatus() {
-        return Status;
-    }
+	@Inject
+	private Logger log;
 
-    public void setStatus(String status) {
-        Status = status;
-    }
+	// public String getStatus() {
+	// return Status;
+	// }
+	//
+	// public void setStatus(String status) {
+	// Status = status;
+	// }
 
-    public String getCurrentTheme() {
-        return currentTheme;
-    }
+	public String getFacebookStatus() {
+		return facebookStatus;
+	}
 
-    public void setCurrentTheme(String currentTheme) {
-        this.currentTheme = currentTheme;
-    }
+	public void setFacebookStatus(String facebookStatus) {
+		this.facebookStatus = facebookStatus;
+	}
 
-    @Inject
-    private MultiSessionManager manager;
+	public String getTwitterStatus() {
+		return twitterStatus;
+	}
 
-    public MultiSessionManager getManager() {
-        return manager;
-    }
+	public void setTwitterStatus(String twitterStatus) {
+		this.twitterStatus = twitterStatus;
+	}
 
-    public void setManager(MultiSessionManager manager) {
-        this.manager = manager;
-    }
+	public String getCurrentTheme() {
+		return currentTheme;
+	}
 
-    public OAuthSession getCurrentSession() {
-        return manager.getCurrentSession();
-    }
+	public void setCurrentTheme(String currentTheme) {
+		this.currentTheme = currentTheme;
+	}
 
-    public void setCurrentSession(OAuthSession currentSession) {
-        manager.setCurrentSession(currentSession);
-    }
+	@Inject
+	private MultiSessionManager manager;
 
-    public Map<String, OAuthSession> getSessionsMap() {
-        return Maps.uniqueIndex(getSessions(), new Function<OAuthSession, String>() {
+	public MultiSessionManager getManager() {
+		return manager;
+	}
 
-            @Override
-            public String apply(OAuthSession arg0) {
+	public void setManager(MultiSessionManager manager) {
+		this.manager = manager;
+	}
 
-                return arg0.toString();
-            }
+	public OAuthSession getCurrentSession() {
+		return manager.getCurrentSession();
+	}
 
-        });
-    }
+	public void setCurrentSession(OAuthSession currentSession) {
+		manager.setCurrentSession(currentSession);
+	}
 
-    @Produces
-    @Named
-    public OAuthService getCurrentService() {
-        return manager.getCurrentService();
-    }
+	public Map<String, OAuthSession> getSessionsMap() {
+		return Maps.uniqueIndex(getSessions(),
+				new Function<OAuthSession, String>() {
 
-    @Produces
-    @Named
-    public SocialMediaApiHub getCurrentHub() {
-        return manager.getCurrentServiceHub();
-    }
+					@Override
+					public String apply(OAuthSession arg0) {
 
-    public List<OAuthSession> getSessions() {
-        return newArrayList(manager.getActiveSessions());
-    }
+						return arg0.toString();
+					}
 
-    public OAuthToken getAccessToken() {
-        return getCurrentSession().getAccessToken();
-    }
+				});
+	}
 
-    public void connectCurrentService() {
-        manager.connectCurrentService();
-    }
+	@Produces
+	@Named
+	public OAuthService getCurrentService() {
+		return manager.getCurrentService();
+	}
 
-    public String getCurrentSessionName() {
-        return manager.getCurrentSession() == null ? "" : manager.getCurrentSession().toString();
-    }
+	@Produces
+	@Named
+	public SocialMediaApiHub getCurrentHub() {
+		return manager.getCurrentServiceHub();
+	}
 
-    public void setCurrentSessionName(String cursrvHdlStr) {
-        setCurrentSession(getSessionsMap().get(cursrvHdlStr));
-    }
+	public List<OAuthSession> getSessions() {
+		log.info(manager.getActiveSessions().toString());
+		return newArrayList(manager.getActiveSessions());
+	}
 
-    public void redirectToAuthorizationURL(String url) throws IOException {
+	public OAuthToken getAccessToken() {
+		return getCurrentSession().getAccessToken();
+	}
 
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        externalContext.redirect(url);
-    }
+	public void connectCurrentService() {
+		manager.connectCurrentService();
+	}
 
-    public String getTimeLineUrl() {
-        if (getCurrentSession() != null && getCurrentSession().isConnected())
-            return "/WEB-INF/fragments/" + getManager().getCurrentService().getType().toLowerCase() + ".xhtml";
-        return "";
-    }
+	public String getCurrentSessionName() {
+		return manager.getCurrentSession() == null ? "" : manager
+				.getCurrentSession().toString();
+	}
 
-    public void serviceInit() throws IOException {
+	public void setCurrentSessionName(String cursrvHdlStr) {
+		setCurrentSession(getSessionsMap().get(cursrvHdlStr));
+	}
 
-        redirectToAuthorizationURL(manager.initNewSession(selectedService));
+	public void redirectToAuthorizationURL(String url) throws IOException {
 
-    }
+		ExternalContext externalContext = FacesContext.getCurrentInstance()
+				.getExternalContext();
+		externalContext.redirect(url);
+	}
 
-    protected void statusUpdateObserver(@Observes @Any StatusUpdated statusUpdate) {
-        if (statusUpdate.getStatus().equals(SocialEvent.Status.SUCCESS)) {
-            log.debugf("Status update with : %s ", statusUpdate.getMessage());
-            setStatus("");
-        }
-    }
+	public String getTimeLineUrl() {
+		if (getCurrentSession() != null && getCurrentSession().isConnected())
+			return "/WEB-INF/fragments/"
+					+ getManager().getCurrentService().getType().toLowerCase()
+					+ ".xhtml";
+		return "";
+	}
 
-    public String resetConnection() {
-        manager.destroyCurrentSession();
-        return null;
-    }
+	public String getTwitterTimeLineUrl() {
+		return "/WEB-INF/fragments/twitter.xhtml";
+	}
 
-    /**
-     * @return the selectedService
-     */
-    public String getSelectedService() {
-        return selectedService;
-    }
+	public String getFacebookTimeLineUrl() {
+		return "/WEB-INF/fragments/facebook.xhtml";
+	}
 
-    /**
-     * @param selectedService the selectedService to set
-     */
-    public void setSelectedService(String selectedService) {
-        this.selectedService = selectedService;
-    }
+	public String getLinkedInTimeLineUrl() {
+		log.info("getLinkedInTimeLineUrl");
+		return "/WEB-INF/fragments/linkedin.xhtml";
+	}
+
+	public void serviceInit() throws IOException {
+
+		redirectToAuthorizationURL(manager.initNewSession(selectedService));
+
+	}
+
+	protected void statusUpdateObserver(
+			@Observes @Any StatusUpdated statusUpdate) {
+		if (statusUpdate.getStatus().equals(SocialEvent.Status.SUCCESS)) {
+			log.debugf("Status update with : %s ", statusUpdate.getMessage());
+			setFacebookStatus("");
+			setTwitterStatus("");
+		}
+	}
+
+	public String resetConnection() {
+		manager.destroyCurrentSession();
+		return null;
+	}
+
+	/**
+	 * @return the selectedService
+	 */
+	public String getSelectedService() {
+		return selectedService;
+	}
+
+	/**
+	 * @param selectedService
+	 *            the selectedService to set
+	 */
+	public void setSelectedService(String selectedService) {
+		this.selectedService = selectedService;
+	}
 
 }

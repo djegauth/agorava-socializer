@@ -20,6 +20,7 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<title>Socializer Application</title>
@@ -68,16 +69,29 @@
 			</h:form>
 		</p:layoutUnit>
 		<p:layoutUnit id="center" position="center">
-			<ui:insert name="content" />
+<!-- 			<p:dataGrid var="sess" value="#{socialClient.sessions}" rendered="#{fn:length(socialClient.sessions) != 0}"> -->
+<!-- 				<ui:param name="serviceName" value="#{sess.serviceName}"></ui:param> -->
+<!-- 				<h:form rendered="#{serviceName == 'LinkedIn'}"> -->
+<!-- 					<ui:include src="#{socialClient.linkedInTimeLineUrl}" /> -->
+<!-- 				</h:form> -->
+<!-- 				<h:form rendered="#{serviceName == 'Facebook'}"> -->
+<!-- 					<ui:include src="#{socialClient.facebookTimeLineUrl}" /> -->
+<!-- 				</h:form> -->
+<!-- 				<h:form rendered="#{serviceName == 'Twitter'}"> -->
+<!-- 					<ui:include src="#{socialClient.twitterTimeLineUrl}" /> -->
+<!-- 				</h:form> -->
+				
+<!-- 			</p:dataGrid> -->
+							<ui:insert name="content" />
 		</p:layoutUnit>
 	</p:layout>
 
 	<p:dialog id="basicDialog" header="Choose Social Network"
 		widgetVar="dlg1">
-		<h:panelGrid columns="3">
+		<h:panelGrid columns="1">
 			<ui:repeat var="service"
 				value="#{socialClient.manager.listOfServices}">
-				<h:outputLink value="#"
+				<h:outputLink value="#" onmouseup="window.close()"
 					onclick="window.open('startoauth.jsf?service=#{service}','oauth','toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0,width=280,height=400,modal=yes')">
 
 					<h:graphicImage library="gfx" name="#{service}.png" height="48"

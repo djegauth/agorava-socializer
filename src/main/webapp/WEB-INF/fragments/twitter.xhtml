@@ -26,12 +26,12 @@
 			<h:panelGrid columns="2" cellpadding="10"
 				columnClasses="verticalTop,verticalBottom">
 
-				<p:inputTextarea value="#{socialClient.status}" cols="50" rows="3"
+				<p:inputTextarea value="#{socialClient.twitterStatus}" cols="50" rows="3"
 					counter="counter" maxlength="140"
 					counterTemplate="{0} characters remaining." autoResize="false" />
 
 				<p:commandButton
-					action="#{twitterTimelineServiceImpl.updateStatus(socialClient.status)}"
+					action="#{twitterTimelineServiceImpl.updateStatus(socialClient.twitterStatus)}"
 					value="Update your status">
 					<f:ajax render="twittertl" execute="twittertl" />
 				</p:commandButton>
